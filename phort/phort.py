@@ -11,7 +11,9 @@ import requests
 #############
 
 api = 'https://check.torproject.org/api/ip'
-helpMsg = """Phort v0.1beta
+dnsPort = 9061
+transPort = 9051
+helpMsg = """Phort v0.1alpha
 The Python + GNU/Linux Tor router CLI
 
 Command         Description
@@ -26,6 +28,9 @@ Developed by Noah Altunian (github.com/naltun)
 Adapted from https://github.com/GouveaHeitor/nipe
 Licensed under the terms of the Mozilla Public License 2.0
 """
+network = "10.66.0.0/255.255.0.0"
+tables = ['nat', 'filter']
+
 
 #############
 # FUNCTIONS #
@@ -130,13 +135,46 @@ def help():
 def start():
     """Starts Phort's tunneling through Tor."""
     
-    pass
+    if os.path.isfile('/etc/init.d/tor'):
+        os.system('sudo /etc/init.d/tor start > /dev/null')
+    else:
+        os.system('sudo systemctl start tor')
+    
+    for table in tables:
+        target = None
+        if table == 'nat':
+            target = 'RETURN'
+        else:
+            target = 'ACCEPT'
+        
+        os.system("sudo iptables -t {} -F OUTPUT".format(table))
+        os.system("sudo iptables -t {} -A OUTPUT -m state --state ESTABLISHED -j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -m owner --uid {} -j {}".format(table, getUser(), target))
 
+        if table == 'nat':
+            target = "REDIRECT --to-ports {}".format(dnsPort)
+        
+        os.system("sudo iptables -t {} -A OUTPUT -d {} -p tcp -j {}".format(table, network, target))
+
+        if table == 'nat':
+            target = 'RETURN'
+        
+        os.system("sudo iptables -t {} -A OUTPUT -d 127.0.0.1/8 -j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 192.168.0.0/16 -j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 172.16.0.0/12 -j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 10.0.0.0/8 -j {}".format(table, target))
+
+        if table == 'nat':
+            target = "REDIRECT --to-ports {}".format(transPort)
+        
+        os.system("sudo iptables -t {} -A OUTPUT -p tcp -j {}".format(table, target))
+
+    os.system('sudo iptables -t filter -A OUTPUT -p udp -j REJECT')
+    os.system('sudo iptables -t filter -A OUTPUT -p icmp -j REJECT')
 
 def stop():
     """Stops Phort's tunneling through Tor."""
-    
-    tables = ['nat', 'filter']
+
     for table in tables:
         os.system("sudo iptables -t {} -F OUTPUT".format(table))
 
