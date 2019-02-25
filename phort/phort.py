@@ -24,6 +24,7 @@ start     Starts Tor routing
 stop      Stops Tor routing
 restart   Restarts Phort
 status    Shows connection status
+help      Shows help message
 
 Developed by Noah Altunian (github.com/naltun)
 Adapted from Nipe (github.com/GouveaHeitor/nipe)
@@ -76,8 +77,10 @@ def cli():
             start()
         elif cmd == 'status':
             checkConn()
+        elif cmd == 'help':
+            help()
         else:
-            print("Invalid command.\n\n")
+            print("Invalid command.\nHELP MESSAGE\n")
             help()
             exit(1)
 

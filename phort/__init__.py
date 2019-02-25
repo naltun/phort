@@ -7,3 +7,4 @@ from phort import *
 
 if __name__ == '__main__':
     cli()
+    exit(0)
