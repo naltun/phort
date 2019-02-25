@@ -14,7 +14,7 @@ import sys
 api = 'https://check.torproject.org/api/ip'
 dnsPort = 9061
 transPort = 9051
-helpMsg = """Phort v0.1alpha
+helpMsg = """Phort v0.1beta
 The Python + GNU/Linux Tor router CLI
 
 Command         Description
