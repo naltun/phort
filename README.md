@@ -30,8 +30,12 @@ Adapted from Nipe (github.com/GouveaHeitor/nipe)
 Source code subject to the terms of the Mozilla Public License, v. 2.0
 ```
 
-#### Installing
-Coming soon
+#### Installation
+###### Requirements
+* requests 2.21.0
+
+###### Installing
+Simply execute `pip install -r requirements.txt` in the `phort` top-level directory.
 
 #### License
 Love your Free/Libre Software. Phort is subject to the terms of the Mozilla Pubic License, v. 2.0.
