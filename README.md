@@ -1,9 +1,7 @@
 # Phort
 ### The Python + GNU/Linux Tor router CLI
 
-_**##################**_
-_**# Currently in beta! #**_
-_**##################**_
+_**Currently in beta!**_
 
 #### What is it?
 Phort is the Tor router CLI for Python + GNU/Linux. Phort is a one stop shop for configuring your device to routing all of its traffic through the Tor network. With a simple, intuitive command-line interface, Phort will help keep you anonymous and more secure on the Internet.
