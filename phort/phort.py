@@ -5,6 +5,7 @@
 import os
 import os.path
 import requests
+import sys
 
 #############
 # VARIABLES #
@@ -25,8 +26,8 @@ restart   Restarts Phort
 status    Shows connection status
 
 Developed by Noah Altunian (github.com/naltun)
-Adapted from https://github.com/GouveaHeitor/nipe
-Licensed under the terms of the Mozilla Public License 2.0
+Adapted from Nipe (github.com/GouveaHeitor/nipe)
+Source code subject to the terms of the Mozilla Public License, v. 2.0
 """
 network = "10.66.0.0/255.255.0.0"
 tables = ['nat', 'filter']
@@ -58,7 +59,27 @@ def checkConn():
 def cli():
     """Handles Phort's CLI interface."""
     
-    pass
+    if not len(sys.argv) == 2:
+        print("No argument found or argument supplied incorrectly.\nHELP MESSAGE\n")
+        help()
+        exit(1)
+    else:
+        cmd = sys.argv[1]
+        if cmd == 'setup':
+            createEnv()
+        elif cmd == 'start':
+            start()
+        elif cmd == 'stop':
+            stop()
+        elif cmd == 'restart':
+            stop()
+            start()
+        elif cmd == 'status':
+            checkConn()
+        else:
+            print("Invalid command.\n\n")
+            help()
+            exit(1)
 
 
 def createEnv():
@@ -171,6 +192,7 @@ def start():
 
     os.system('sudo iptables -t filter -A OUTPUT -p udp -j REJECT')
     os.system('sudo iptables -t filter -A OUTPUT -p icmp -j REJECT')
+
 
 def stop():
     """Stops Phort's tunneling through Tor."""
