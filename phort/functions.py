@@ -97,16 +97,16 @@ def createEnv():
     os.system('sudo mkdir -p /etc/tor')
     if opsys == 'arch':
         os.system('sudo pacman -S tor iptables')
-        os.system('sudo cp ../config/arch-torrc /etc/tor/torrc')
+        os.system('sudo cp config/arch-torrc /etc/tor/torrc')
     elif opsys == 'centos':
         os.system('sudo yum install epel-release tor iptables')
-        os.system('sudo cp ../config/centos-torrc /etc/tor/torrc')
+        os.system('sudo cp config/centos-torrc /etc/tor/torrc')
     elif opsys == 'debian':
         os.system('sudo apt install tor iptables')
-        os.system('sudo cp ../config/debian-torrc /etc/tor/torrc')
+        os.system('sudo cp config/debian-torrc /etc/tor/torrc')
     elif opsys == 'fedora':
         os.system('sudo dnf install tor iptables')
-        os.system('sudo cp ../config/fedora-torrc /etc/tor/torrc')
+        os.system('sudo cp config/fedora-torrc /etc/tor/torrc')
     else:
         print('Unknown operating system. Exiting')
         exit(1)
