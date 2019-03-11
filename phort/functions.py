@@ -42,26 +42,28 @@ def checkConn():
     """Checks to see if the device's IP address is tunneled through Tor.
     checkip will return the device's Tor connection status and IP address.
     """
-    
+
     req = requests.get(api)
     if req.status_code == requests.codes.ok:
-        json = req.json()
-        if json['IsTor']:
-            print("\033[1;32m[*]\033[1;37m Connected: {}".format(json['IsTor']))
-            print("\033[1;32m[*]\033[1;37m IP: {}\033[0m".format(json['IP']))
+        j = req.json()
+        if j['IsTor']:
+            print("\033[1;32m[*]\033[1;37m Connected: {}".format(j['IsTor']))
+            print("\033[1;32m[*]\033[1;37m IP: {}\033[0m".format(j['IP']))
         else:
-            print("\033[0;31m[!]\033[1;37m Connected: {}".format(json['IsTor']))
-            print("\033[0;31m[!]\033[1;37m IP: {}\033[0m".format(json['IP']))
+            print("\033[0;31m[!]\033[1;37m Connected: {}".format(j['IsTor']))
+            print("\033[0;31m[!]\033[1;37m IP: {}\033[0m".format(j['IP']))
 
     else:
-        print('\033[31m[!]\033[1;37m ERROR: sorry, it was not possible to establish a connection to the server.\033[0m')
+        print('\033[31m[!]\033[1;37m ERROR: sorry, it was not possible'
+              'to establish a connection to the server.\033[0m')
 
 
 def cli():
     """Handles Phort's CLI interface."""
-    
+
     if not len(sys.argv) == 2:
-        print("No argument found or argument supplied incorrectly.\nHELP MESSAGE\n")
+        print("No argument found or argument supplied incorrectly.\n"
+              "HELP MESSAGE\n")
         help()
         exit(1)
     else:
@@ -89,7 +91,7 @@ def createEnv():
     """Creates the user's phort environment by interacting with the user's
     operating system. This method is invoked via the 'setup' CLI command.
     """
-    
+
     opsys = getOpSys()
     print("Setting up environment...\nMaking /etc/tor")
     os.system('sudo mkdir -p /etc/tor')
@@ -108,24 +110,24 @@ def createEnv():
     else:
         print('Unknown operating system. Exiting')
         exit(1)
-    
+
     os.system('sudo chmod 644 /etc/tor/torrc')
-    
 
 
 def getOpSys():
     """Determines which Linux OS the user is using. This function will be used
     elsewhere in Phort.
     """
-    
-    opsys = os.popen("awk -F= '$1==\"ID_LIKE\" { print $2 ;}' /etc/os-release").read().rstrip()
-    if opsys == 'Archlinux' or opsys == 'archlinux':
+
+    opsys = os.popen("awk -F= '$1==\"ID_LIKE\" { print $2 ;}' "
+                     "/etc/os-release").read().rstrip()
+    if opsys.lower() == 'archlinux':
         return 'arch'
-    elif opsys == 'Centos' or opsys == 'centos':
+    elif opsys.lower() == 'centos':
         return 'centos'
-    elif opsys == 'Debian' or opsys == 'debian' or opsys == 'Ubuntu' or opsys == 'ubuntu':
+    elif opsys.lower() == 'debian' or opsys.lower() == 'ubuntu':
         return 'debian'
-    elif opsys == 'Fedora' or opsys == 'fedora':
+    elif opsys.lower() == 'fedora':
         return 'fedora'
     else:
         print('Unknown operating system. Exiting')
@@ -136,15 +138,16 @@ def getUser():
     """Determines which Linux OS the user is using. This function will be used
     elsewhere in Phort.
     """
-    
-    opsys = os.popen("awk -F= '$1==\"ID_LIKE\" { print $2 ;}' /etc/os-release").read().rstrip()
-    if opsys == 'Archlinux' or opsys == 'archlinux':
+
+    opsys = os.popen("awk -F= '$1==\"ID_LIKE\" { print $2 ;}' "
+                     "/etc/os-release").read().rstrip()
+    if opsys.lower() == 'archlinux':
         return 'tor'
-    elif opsys == 'Debian' or opsys == 'debian':
+    elif opsys.lower() == 'debian':
         return 'debian-tor'
-    elif opsys == 'Fedora' or opsys == 'fedora' or opsys == 'Centos' or opsys == 'centos':
+    elif opsys.lower() == 'fedora' or opsys.lower() == 'centos':
         return 'toranon'
-    elif opsys == 'Ubuntu' or opsys == 'ubuntu':
+    elif opsys.lower() == 'ubuntu':
         return 'tor'
     else:
         return 'tor'
@@ -152,46 +155,54 @@ def getUser():
 
 def help():
     """Prints Phort's help message to standard output."""
-    
-    print(helpMsg)    
+
+    print(helpMsg)
 
 
 def start():
     """Starts Phort's tunneling through Tor."""
-    
+
     if os.path.isfile('/etc/init.d/tor'):
         os.system('sudo /etc/init.d/tor start > /dev/null')
     else:
         os.system('sudo systemctl start tor')
-    
+
     for table in tables:
         target = None
         if table == 'nat':
             target = 'RETURN'
         else:
             target = 'ACCEPT'
-        
+
         os.system("sudo iptables -t {} -F OUTPUT".format(table))
-        os.system("sudo iptables -t {} -A OUTPUT -m state --state ESTABLISHED -j {}".format(table, target))
-        os.system("sudo iptables -t {} -A OUTPUT -m owner --uid {} -j {}".format(table, getUser(), target))
+        os.system("sudo iptables -t {} -A OUTPUT -m state --state "
+                  "ESTABLISHED -j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -m owner "
+                  "--uid {} -j {}".format(table, getUser(), target))
 
         if table == 'nat':
             target = "REDIRECT --to-ports {}".format(dnsPort)
-        
-        os.system("sudo iptables -t {} -A OUTPUT -d {} -p tcp -j {}".format(table, network, target))
+
+        os.system("sudo iptables -t {} -A OUTPUT -d {} -p "
+                  "tcp -j {}".format(table, network, target))
 
         if table == 'nat':
             target = 'RETURN'
-        
-        os.system("sudo iptables -t {} -A OUTPUT -d 127.0.0.1/8 -j {}".format(table, target))
-        os.system("sudo iptables -t {} -A OUTPUT -d 192.168.0.0/16 -j {}".format(table, target))
-        os.system("sudo iptables -t {} -A OUTPUT -d 172.16.0.0/12 -j {}".format(table, target))
-        os.system("sudo iptables -t {} -A OUTPUT -d 10.0.0.0/8 -j {}".format(table, target))
+
+        os.system("sudo iptables -t {} -A OUTPUT -d 127.0.0.1/8 "
+                  "-j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 192.168.0.0/16 "
+                  "-j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 172.16.0.0/12 "
+                  "-j {}".format(table, target))
+        os.system("sudo iptables -t {} -A OUTPUT -d 10.0.0.0/8 "
+                  "-j {}".format(table, target))
 
         if table == 'nat':
             target = "REDIRECT --to-ports {}".format(transPort)
-        
-        os.system("sudo iptables -t {} -A OUTPUT -p tcp -j {}".format(table, target))
+
+        os.system("sudo iptables -t {} -A OUTPUT -p tcp "
+                  "-j {}".format(table, target))
 
     os.system('sudo iptables -t filter -A OUTPUT -p udp -j REJECT')
     os.system('sudo iptables -t filter -A OUTPUT -p icmp -j REJECT')
@@ -207,5 +218,3 @@ def stop():
         os.system('sudo /etc/init.d/tor stop > /dev/null')
     else:
         os.system('sudo systemctl stop tor')
-    
-    # return true
