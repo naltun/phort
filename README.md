@@ -20,7 +20,7 @@ The Python + GNU/Linux Tor router CLI
 
 Command         Description
 -------   -----------------------
-setup     Set up your environment
+setup     Sets up your environment
 start     Starts Tor routing
 stop      Stops Tor routing
 restart   Restarts Phort
