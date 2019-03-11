@@ -1,1 +1,6 @@
-__pycache__
+# Directories
+__pycache__/
+venv/
+
+# Files
+*.py[cod]
