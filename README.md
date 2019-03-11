@@ -12,9 +12,9 @@ Phort is a Python adaptation of [Nipe](https://github.com/GouveaHeitor/nipe). Ni
 #### HOWTO
 This is subject to change.
 ```bash
-$ python3 __init__.py <command>
+$ python3 phort.py <command>
 
-$ python3 __init__.py help
+$ python3 phort.py help
 Phort v0.1beta
 The Python + GNU/Linux Tor router CLI
 
