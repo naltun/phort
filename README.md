@@ -1,13 +1,13 @@
 # Phort
 ### The Python + GNU/Linux Tor router CLI
 
-_**Currently in beta!**_
+_**Archived!**_
 
 #### What is it?
 Phort is the Tor router CLI for Python + GNU/Linux. Phort is a one stop shop for configuring your device to routing all of its traffic through the Tor network. With a simple, intuitive command-line interface, Phort will help keep you anonymous and more secure on the Internet.
 
 ###### DISCLAIMER
-Phort is a Python adaptation of [Nipe](https://github.com/GouveaHeitor/nipe). Nipe is a wonderful piece of software written by [Heitor Gouvêa](https://github.com/GouveaHeitor).
+Phort is a Python adaptation of [Nipe](https://github.com/GouveaHeitor/nipe), and was a fun project to tinker with (I learned some things about networking). That being said, Nipe is a wonderful piece of software written by [Heitor Gouvêa](https://github.com/GouveaHeitor) and is better-suited for accomplishing the task of routing system network via Tor. Show some love and go give Nipe a try.
 
 #### HOWTO
 This is subject to change.
