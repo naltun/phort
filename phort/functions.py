@@ -61,30 +61,30 @@ def checkConn():
 def cli():
     """Handles Phort's CLI interface."""
 
-    if not len(sys.argv) == 2:
-        print("No argument found or argument supplied incorrectly.\n"
-              "HELP MESSAGE\n")
-        help()
-        exit(1)
-    else:
+    if len(sys.argv) == 2:
         cmd = sys.argv[1]
-        if cmd == 'setup':
-            createEnv()
-        elif cmd == 'start':
-            start()
-        elif cmd == 'stop':
-            stop()
+        if cmd == 'help':
+            help()
         elif cmd == 'restart':
             stop()
             start()
+        elif cmd == 'setup':
+            createEnv()
+        elif cmd == 'start':
+            start()
         elif cmd == 'status':
             checkConn()
-        elif cmd == 'help':
-            help()
+        elif cmd == 'stop':
+            stop()
         else:
             print("Invalid command.\nHELP MESSAGE\n")
             help()
             exit(1)
+    else:
+        print("No argument found or argument supplied incorrectly.\n"
+              "HELP MESSAGE\n")
+        help()
+        exit(1)
 
 
 def createEnv():
@@ -125,7 +125,7 @@ def getOpSys():
         return 'arch'
     elif opsys.lower() == 'centos':
         return 'centos'
-    elif opsys.lower() == 'debian' or opsys.lower() == 'ubuntu':
+    elif opsys.lower() in ['debian', 'ubuntu']:
         return 'debian'
     elif opsys.lower() == 'fedora':
         return 'fedora'
@@ -145,7 +145,7 @@ def getUser():
         return 'tor'
     elif opsys.lower() == 'debian':
         return 'debian-tor'
-    elif opsys.lower() == 'fedora' or opsys.lower() == 'centos':
+    elif opsys.lower() in ['fedora', 'centos']:
         return 'toranon'
     elif opsys.lower() == 'ubuntu':
         return 'tor'
@@ -169,11 +169,7 @@ def start():
 
     for table in tables:
         target = None
-        if table == 'nat':
-            target = 'RETURN'
-        else:
-            target = 'ACCEPT'
-
+        target = 'RETURN' if table == 'nat' else 'ACCEPT'
         os.system("sudo iptables -t {} -F OUTPUT".format(table))
         os.system("sudo iptables -t {} -A OUTPUT -m state --state "
                   "ESTABLISHED -j {}".format(table, target))
